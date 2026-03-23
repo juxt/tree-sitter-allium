@@ -1,0 +1,95 @@
+==================
+Single Line Comment
+==================
+-- this is a comment
+
+---
+
+(source_file
+  (comment))
+
+==================
+Comment After a Declaration
+==================
+rule r { trigger: active } -- trailing comment
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))))
+  (comment))
+
+==================
+Comment Between Declarations
+==================
+rule r {
+  trigger: active
+}
+-- between declarations
+entity e {
+  name: String
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))))
+  (comment)
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))
+
+==================
+Comment Inside a Block Body
+==================
+rule r {
+  -- comment inside block
+  trigger: active
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (comment)
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))
+
+==================
+Multiple Consecutive Comments
+==================
+-- first comment
+-- second comment
+-- third comment
+rule r {
+  trigger: active
+}
+
+---
+
+(source_file
+  (comment)
+  (comment)
+  (comment)
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))

@@ -112,3 +112,50 @@ rule NoBody
 (source_file
   (ERROR
     (identifier)))
+
+==================
+Misspelled Keyword Treated as Field Assignment
+==================
+rule r {
+  triggr: active
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))
+
+==================
+Block with Only a Comment
+==================
+rule r {
+  -- only a comment
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (comment))))
+
+==================
+Declaration Keyword Without Name
+==================
+rule {
+  v: 1
+}
+
+---
+
+(source_file
+  (ERROR
+    (ERROR)
+    (identifier)
+    (number_literal)))

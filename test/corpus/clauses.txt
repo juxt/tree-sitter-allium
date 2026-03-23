@@ -222,3 +222,68 @@ entity Account {
       (annotation
         kind: (annotation_keyword)
         name: (identifier)))))
+
+==================
+Let Binding Inside a Block
+==================
+rule r {
+  let x = 5
+  trigger: active
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (let_binding
+        name: (identifier)
+        value: (number_literal))
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))
+
+==================
+Open Question Inside a Block
+==================
+rule r {
+  trigger: active
+  open question "Is this the right approach?"
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))
+      (open_question
+        text: (string_literal)))))
+
+==================
+Mixed Clauses and Field Assignments in One Block
+==================
+rule r {
+  let x = 5
+  open question "Should this be configurable?"
+  trigger: active
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (let_binding
+        name: (identifier)
+        value: (number_literal))
+      (open_question
+        text: (string_literal))
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))

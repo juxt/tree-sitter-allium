@@ -298,3 +298,274 @@ rule t {
         value: (thin_arrow_expression
           left: (identifier)
           right: (identifier))))))
+
+==================
+Empty String Literal
+==================
+rule s {
+  label: ""
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (string_literal)))))
+
+==================
+String with Escape Sequences
+==================
+rule s {
+  msg: "hello\nworld\"quoted"
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (string_literal
+          (escape_sequence)
+          (escape_sequence))))))
+
+==================
+String with Multiple Interpolations
+==================
+rule s {
+  msg: "Hello {name}, welcome to {place}"
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (string_literal
+          (string_interpolation
+            (identifier))
+          (string_interpolation
+            (identifier)))))))
+
+==================
+Chained Comparisons with Boolean Operators
+==================
+rule r {
+  check: a > 0 and b < 10 or c = true
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (or_expression
+          left: (and_expression
+            left: (comparison_expression
+              left: (identifier)
+              right: (number_literal))
+            right: (comparison_expression
+              left: (identifier)
+              right: (number_literal)))
+          right: (comparison_expression
+            left: (identifier)
+            right: (boolean_literal)))))))
+
+==================
+Null Coalescing Chain
+==================
+rule r {
+  v: a ?? b ?? c
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (null_coalescing_expression
+          left: (null_coalescing_expression
+            left: (identifier)
+            right: (identifier))
+          right: (identifier))))))
+
+==================
+Optional Member Chain
+==================
+rule r {
+  v: a?.b?.c
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (optional_member_expression
+          object: (optional_member_expression
+            object: (identifier)
+            property: (identifier))
+          property: (identifier))))))
+
+==================
+Member Access then Call then Member
+==================
+rule r {
+  v: obj.method().property
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (member_expression
+          object: (call_expression
+            function: (member_expression
+              object: (identifier)
+              property: (identifier)))
+          property: (identifier))))))
+
+==================
+Infix Predicate Expression
+==================
+rule r {
+  requires: symbol resolves_to_definition
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (infix_predicate_expression
+          subject: (identifier)
+          predicate: (identifier))))))
+
+==================
+Nested Function Calls
+==================
+rule r {
+  v: outer(inner(x))
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (call_expression
+              function: (identifier)
+              arguments: (argument_list
+                (identifier)))))))))
+
+==================
+Named Arguments in Call
+==================
+rule r {
+  v: Foo(name: "bar", count: 3)
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (named_argument
+              name: (identifier)
+              value: (string_literal))
+            (named_argument
+              name: (identifier)
+              value: (number_literal))))))))
+
+==================
+Duration Literals for All Units
+==================
+rule r {
+  a: 5.seconds,
+  b: 2.weeks,
+  c: 1.year,
+  d: 3.hours,
+  e: 10.days,
+  f: 6.months
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal))
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal))
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal))
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal))
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal))
+      (field_assignment
+        key: (identifier)
+        value: (duration_literal)))))
+
+==================
+Subtraction as Negative Style
+==================
+rule r {
+  v: 0 - x
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (additive_expression
+          left: (number_literal)
+          right: (identifier))))))

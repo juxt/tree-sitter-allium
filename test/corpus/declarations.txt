@@ -297,3 +297,145 @@ entity Item {
       (field_assignment
         key: (identifier)
         value: (identifier)))))
+
+==================
+Module with Declarations
+==================
+module core
+rule r {
+  trigger: active
+}
+entity e {
+  name: String
+}
+
+---
+
+(source_file
+  (module_declaration
+    name: (identifier))
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))))
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))
+
+==================
+Use with Alias
+==================
+use "auth/tokens" as tokens
+
+---
+
+(source_file
+  (use_declaration
+    path: (string_literal)
+    alias: (identifier)))
+
+==================
+Multiple Use Declarations
+==================
+use "std/base"
+use "auth/tokens" as tokens
+use "payments"
+
+---
+
+(source_file
+  (use_declaration
+    path: (string_literal))
+  (use_declaration
+    path: (string_literal)
+    alias: (identifier))
+  (use_declaration
+    path: (string_literal)))
+
+==================
+Variant with Complex Sum Type
+==================
+variant Status: active | inactive | pending
+
+---
+
+(source_file
+  (variant_declaration
+    name: (identifier)
+    type: (pipe_expression
+      left: (pipe_expression
+        left: (identifier)
+        right: (identifier))
+      right: (identifier))))
+
+==================
+Default with Block Expression Value
+==================
+default timeout = { retries: 3, delay: 1.seconds }
+
+---
+
+(source_file
+  (default_declaration
+    name: (identifier)
+    value: (block_expression
+      (block_body
+        (field_assignment
+          key: (identifier)
+          value: (number_literal))
+        (field_assignment
+          key: (identifier)
+          value: (duration_literal))))))
+
+==================
+Entity with Mixed Field Assignments and Clauses
+==================
+entity Order {
+  name: String,
+  price: Decimal,
+  requires: name = null
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (clause
+        keyword: (clause_keyword)
+        value: (comparison_expression
+          left: (identifier)
+          right: (null_literal))))))
+
+==================
+Contract with Typed Fields
+==================
+contract Delivery {
+  deadline: Duration,
+  priority: Integer
+}
+
+---
+
+(source_file
+  (contract_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))
