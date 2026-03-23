@@ -1,0 +1,332 @@
+==================
+Backtick Literal in Enum
+==================
+enum Dir { `no-cache` | public }
+
+---
+
+(source_file
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      values: (pipe_expression
+        left: (backtick_literal)
+        right: (identifier)))))
+
+==================
+Backtick Literal in Comparison
+==================
+rule R {
+  requires: locale != `de-CH-1996`
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (comparison_expression
+          left: (identifier)
+          right: (backtick_literal))))))
+
+==================
+Transition Block
+==================
+entity Order {
+  status: pending | confirmed
+  transitions status {
+    pending -> confirmed
+    terminal: confirmed
+  }
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (pipe_expression
+          left: (identifier)
+          right: (identifier)))
+      (transition_block
+        field: (identifier)
+        (transition_edge
+          from: (identifier)
+          to: (identifier))
+        (terminal_clause
+          states: (identifier))))))
+
+==================
+Transition Block with Multiple Edges and Terminals
+==================
+entity Sub {
+  transitions status {
+    trial -> active
+    active -> cancelled
+    terminal: cancelled, expired
+  }
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (transition_block
+        field: (identifier)
+        (transition_edge
+          from: (identifier)
+          to: (identifier))
+        (transition_edge
+          from: (identifier)
+          to: (identifier))
+        (terminal_clause
+          states: (identifier)
+          states: (identifier))))))
+
+==================
+When Expression on Field
+==================
+entity E {
+  f: String when status = active
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (when_expression
+          value: (identifier)
+          condition: (comparison_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+==================
+Where Expression
+==================
+entity E {
+  items: Order where active = true
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (where_expression
+          collection: (identifier)
+          condition: (comparison_expression
+            left: (identifier)
+            right: (boolean_literal)))))))
+
+==================
+With Expression
+==================
+entity E {
+  items: Order with status = active
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (with_expression
+          collection: (identifier)
+          condition: (comparison_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+==================
+In Expression with Set Literal
+==================
+rule R {
+  requires: status in {pending, confirmed}
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (in_expression
+          element: (identifier)
+          collection: (set_literal
+            (identifier)
+            (identifier)))))))
+
+==================
+For Block
+==================
+rule R {
+  for x in items:
+    ensures: x.done
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (for_block
+        binding: (identifier)
+        collection: (identifier)
+        body: (clause
+          keyword: (clause_keyword)
+          value: (member_expression
+            object: (identifier)
+            property: (identifier)))))))
+
+==================
+For Block with Where
+==================
+rule R {
+  for x in items where x.active:
+    ensures: x.done
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (for_block
+        binding: (identifier)
+        collection: (where_expression
+          collection: (identifier)
+          condition: (member_expression
+            object: (identifier)
+            property: (identifier)))
+        body: (clause
+          keyword: (clause_keyword)
+          value: (member_expression
+            object: (identifier)
+            property: (identifier)))))))
+
+==================
+If Block
+==================
+rule R {
+  if active:
+    ensures: done
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (if_block
+        condition: (identifier)
+        consequence: (clause
+          keyword: (clause_keyword)
+          value: (identifier))))))
+
+==================
+Invariant Block in Entity
+==================
+entity E {
+  balance: Decimal
+  invariant Positive { this.balance >= 0 }
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (invariant_block
+        name: (identifier)
+        body: (comparison_expression
+          left: (member_expression
+            object: (identifier)
+            property: (identifier))
+          right: (number_literal))))))
+
+==================
+For Expression in Invariant
+==================
+invariant AllDone {
+  for x in items where x.active:
+    x.done = true
+}
+
+---
+
+(source_file
+  (invariant_declaration
+    name: (identifier)
+    body: (for_expression
+      binding: (identifier)
+      collection: (where_expression
+        collection: (identifier)
+        condition: (member_expression
+          object: (identifier)
+          property: (identifier)))
+      body: (comparison_expression
+        left: (member_expression
+          object: (identifier)
+          property: (identifier))
+        right: (boolean_literal)))))
+
+==================
+Exists Expression
+==================
+rule R {
+  requires: exists active_items
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (exists_expression
+          operand: (identifier))))))
+
+==================
+Context Clause
+==================
+surface Dashboard {
+  context: order
+}
+
+---
+
+(source_file
+  (surface_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))

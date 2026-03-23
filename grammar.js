@@ -1,9 +1,12 @@
 /**
- * Tree-sitter grammar for the Allium language.
+ * Tree-sitter grammar for the Allium language (v3).
  *
  * Allium is a specification language with block-based declarations (rule,
  * entity, enum, config, given, surface, actor, value) and clause-driven
  * rule bodies (when:, requires:, ensures:).
+ *
+ * V3 additions: transition graphs, when-qualified fields, backtick literals,
+ * for/if blocks, where/with/in/exists expressions, set literals.
  */
 
 /// <reference types="tree-sitter-cli/dsl" />
@@ -11,20 +14,22 @@
 
 const PREC = {
   COMMA: 1,
-  IMPLIES: 2,
-  LAMBDA: 3,
-  OR: 4,
-  NULLISH_COALESCE: 5,
-  AND: 6,
-  NOT: 7,
-  COMPARE: 8,
-  ADD: 9,
-  MULTIPLY: 10,
-  INFIX: 11,
-  PIPE: 12,
-  CALL: 13,
-  MEMBER: 14,
-  PRIMARY: 15,
+  WHEN: 2,
+  IMPLIES: 3,
+  LAMBDA: 4,
+  OR: 5,
+  NULLISH_COALESCE: 6,
+  AND: 7,
+  NOT: 8,
+  WHERE: 9,
+  COMPARE: 10,
+  ADD: 11,
+  MULTIPLY: 12,
+  INFIX: 13,
+  PIPE: 14,
+  CALL: 15,
+  MEMBER: 16,
+  PRIMARY: 17,
 };
 
 module.exports = grammar({
@@ -35,8 +40,6 @@ module.exports = grammar({
   extras: ($) => [$.comment, /[ \t\r\n]+/],
 
   conflicts: ($) => [
-    [$.default_declaration],
-    [$._expression, $.infix_predicate_expression],
     [$.annotation],
   ],
 
@@ -55,6 +58,8 @@ module.exports = grammar({
     // -----------------------------------------------------------------------
 
     identifier: (_) => /[A-Za-z_][A-Za-z0-9_]*/,
+
+    backtick_literal: (_) => /`[^`]*`/,
 
     string_literal: ($) =>
       seq(
@@ -138,7 +143,15 @@ module.exports = grammar({
       seq("value", field("name", $.identifier), field("body", $.block_body)),
 
     enum_declaration: ($) =>
-      seq("enum", field("name", $.identifier), field("body", $.block_body)),
+      seq(
+        "enum",
+        field("name", $.identifier),
+        field("body", choice($.block_body, $.enum_body)),
+      ),
+
+    // Enum body: pipe-separated or comma-separated values without key: value
+    enum_body: ($) =>
+      seq("{", field("values", choice($._expression, $.tuple_expression)), "}"),
 
     given_block: ($) => seq("given", field("body", $.block_body)),
 
@@ -188,7 +201,17 @@ module.exports = grammar({
     block_body: ($) => seq("{", repeat(seq($._block_item, optional(","))), "}"),
 
     _block_item: ($) =>
-      choice($.clause, $.field_assignment, $.let_binding, $.open_question, $.annotation),
+      choice(
+        $.clause,
+        $.field_assignment,
+        $.let_binding,
+        $.open_question,
+        $.annotation,
+        $.transition_block,
+        $.for_block,
+        $.if_block,
+        $.invariant_block,
+      ),
 
     // Clause: reserved keyword followed by colon and an expression
     clause: ($) =>
@@ -220,6 +243,7 @@ module.exports = grammar({
         "timeout",
         "within",
         "contracts",
+        "context",
       ),
 
     // Field assignment: plain identifier followed by colon and an expression
@@ -250,11 +274,94 @@ module.exports = grammar({
     annotation_keyword: (_) => choice("invariant", "guidance", "guarantee"),
 
     // -----------------------------------------------------------------------
+    // Transition graphs (v3)
+    // -----------------------------------------------------------------------
+
+    // "transitions field_name { edge... terminal: states }"
+    transition_block: ($) =>
+      seq(
+        "transitions",
+        field("field", $.identifier),
+        "{",
+        repeat(choice($.transition_edge, $.terminal_clause)),
+        "}",
+      ),
+
+    // "from -> to"
+    transition_edge: ($) =>
+      seq(field("from", $.identifier), "->", field("to", $.identifier)),
+
+    // "terminal: state1, state2"
+    terminal_clause: ($) =>
+      seq(
+        "terminal",
+        ":",
+        field("states", $.identifier),
+        repeat(seq(",", field("states", $.identifier))),
+      ),
+
+    // -----------------------------------------------------------------------
+    // For blocks (v3)
+    // -----------------------------------------------------------------------
+
+    // Block-level for: "for binding in collection: block_item"
+    // When "where" is used, it parses as a where_expression on the collection.
+    for_block: ($) =>
+      seq(
+        "for",
+        field("binding", $.identifier),
+        "in",
+        field("collection", $._expression),
+        ":",
+        field("body", $._block_item),
+      ),
+
+    // -----------------------------------------------------------------------
+    // If blocks (v3)
+    // -----------------------------------------------------------------------
+
+    // Block-level if: "if condition: block_item [else if ...: ... ] [else: ...]"
+    if_block: ($) =>
+      prec.right(
+        seq(
+          "if",
+          field("condition", $._expression),
+          ":",
+          field("consequence", $._block_item),
+          repeat($.else_if_clause),
+          optional($.else_clause),
+        ),
+      ),
+
+    else_if_clause: ($) =>
+      seq(
+        "else",
+        "if",
+        field("condition", $._expression),
+        ":",
+        field("consequence", $._block_item),
+      ),
+
+    else_clause: ($) =>
+      seq("else", ":", field("alternative", $._block_item)),
+
+    // -----------------------------------------------------------------------
+    // Invariant block inside entities (v3)
+    // -----------------------------------------------------------------------
+
+    // "invariant Name { expr }" inside a block body
+    invariant_block: ($) =>
+      seq("invariant", field("name", $.identifier), "{", field("body", $._expression), "}"),
+
+    // -----------------------------------------------------------------------
     // Expressions
     // -----------------------------------------------------------------------
 
     _expression: ($) =>
       choice(
+        $.for_expression,
+        $.if_expression,
+        $.when_expression,
         $.lambda_expression,
         $.thin_arrow_expression,
         $.implies_expression,
@@ -262,6 +369,11 @@ module.exports = grammar({
         $.null_coalescing_expression,
         $.and_expression,
         $.not_expression,
+        $.exists_expression,
+        $.where_expression,
+        $.with_expression,
+        $.in_expression,
+        $.not_in_expression,
         $.comparison_expression,
         $.additive_expression,
         $.multiplicative_expression,
@@ -275,6 +387,8 @@ module.exports = grammar({
         $.number_literal,
         $.boolean_literal,
         $.null_literal,
+        $.backtick_literal,
+        $.set_literal,
         $.identifier,
         $.block_expression,
       ),
@@ -288,6 +402,45 @@ module.exports = grammar({
           field("left", choice($._expression, $.tuple_expression)),
           ",",
           field("right", choice($._expression, $.tuple_expression)),
+        ),
+      ),
+
+    // For expression: "for binding in collection: expr"
+    // When "where" is used, it parses as a where_expression on the collection.
+    for_expression: ($) =>
+      prec.right(
+        PREC.WHEN,
+        seq(
+          "for",
+          field("binding", $.identifier),
+          "in",
+          field("collection", $._expression),
+          ":",
+          field("body", $._expression),
+        ),
+      ),
+
+    // If expression: "if condition: expr [else: expr]"
+    if_expression: ($) =>
+      prec.right(
+        PREC.WHEN,
+        seq(
+          "if",
+          field("condition", $._expression),
+          ":",
+          field("consequence", $._expression),
+          optional(seq("else", ":", field("alternative", $._expression))),
+        ),
+      ),
+
+    // When guard: "expr when condition"
+    when_expression: ($) =>
+      prec.right(
+        PREC.WHEN,
+        seq(
+          field("value", $._expression),
+          "when",
+          field("condition", $._expression),
         ),
       ),
 
@@ -338,6 +491,55 @@ module.exports = grammar({
     // Unary NOT
     not_expression: ($) =>
       prec(PREC.NOT, seq("not", field("operand", $._expression))),
+
+    // Unary EXISTS
+    exists_expression: ($) =>
+      prec(PREC.NOT, seq("exists", field("operand", $._expression))),
+
+    // Where filter: "collection where condition"
+    where_expression: ($) =>
+      prec.left(
+        PREC.WHERE,
+        seq(
+          field("collection", $._expression),
+          "where",
+          field("condition", $._expression),
+        ),
+      ),
+
+    // With filter: "collection with predicate"
+    with_expression: ($) =>
+      prec.left(
+        PREC.WHERE,
+        seq(
+          field("collection", $._expression),
+          "with",
+          field("condition", $._expression),
+        ),
+      ),
+
+    // Membership: "expr in collection"
+    in_expression: ($) =>
+      prec.left(
+        PREC.COMPARE,
+        seq(
+          field("element", $._expression),
+          "in",
+          field("collection", $._expression),
+        ),
+      ),
+
+    // Negated membership: "expr not in collection"
+    not_in_expression: ($) =>
+      prec.left(
+        PREC.COMPARE,
+        seq(
+          field("element", $._expression),
+          "not",
+          "in",
+          field("collection", $._expression),
+        ),
+      ),
 
     // Comparisons: = == != < > <= >=
     comparison_expression: ($) =>
@@ -465,6 +667,15 @@ module.exports = grammar({
           "=>",
           field("body", $._expression),
         ),
+      ),
+
+    // Set literal: "{a, b, c}"
+    set_literal: ($) =>
+      seq(
+        "{",
+        $._expression,
+        repeat1(seq(",", $._expression)),
+        "}",
       ),
   },
 });
