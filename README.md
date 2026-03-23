@@ -18,24 +18,19 @@ Editors with tree-sitter support (Helix, Zed) can use this grammar directly. Bui
 
 ## Building
 
+Install dependencies:
+
 ```bash
 npm install
-tree-sitter generate
 ```
 
-### Native binding
+Generate the parser from `grammar.js` and build all artifacts:
 
 ```bash
-npm run build:native
+npm run build
 ```
 
-### WASM binding
-
-Requires `emscripten`:
-
-```bash
-npm run build:wasm
-```
+This runs `tree-sitter generate`, then builds the native `.node` binding and the `.wasm` binding. The WASM step requires `emscripten` and is skipped if unavailable.
 
 ## Testing
 
