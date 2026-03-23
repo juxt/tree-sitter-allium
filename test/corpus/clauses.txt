@@ -91,6 +91,111 @@ surface API {
             predicate: (identifier)))))))
 
 ==================
+Tuple Expressions in Ensures Clause
+==================
+rule Validation {
+  ensures: count > 0, total = sum
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (tuple_expression
+          left: (comparison_expression
+            left: (identifier)
+            right: (number_literal))
+          right: (comparison_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+==================
+Multiple Provides Clauses
+==================
+surface API {
+  provides: auth_token
+  provides: session_id
+}
+
+---
+
+(source_file
+  (surface_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))
+
+==================
+Transitions_to and Becomes Clauses
+==================
+rule ShipOrder {
+  transitions_to: shipped
+  becomes: fulfilled
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier)))))
+
+==================
+Within and Timeout Clauses
+==================
+rule Payment {
+  within: 30.minutes
+  timeout: 1.hours
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (duration_literal))
+      (clause
+        keyword: (clause_keyword)
+        value: (duration_literal)))))
+
+==================
+Guarantee Clause
+==================
+rule SLA {
+  guarantee: response_time < 200
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (comparison_expression
+          left: (identifier)
+          right: (number_literal))))))
+
+==================
 Annotations
 ==================
 entity Account {

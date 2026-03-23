@@ -53,3 +53,62 @@ rule unknown {
       (field_assignment
         key: (identifier)
         value: (boolean_literal)))))
+
+==================
+Unclosed String Literal
+==================
+rule broken {
+  name: "unterminated
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (string_literal
+          (MISSING """))))))
+
+==================
+Missing Closing Paren in Call
+==================
+rule broken {
+  v: func(a, b
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (identifier)
+            (identifier))
+          (MISSING ")"))))))
+
+==================
+Empty Source File
+==================
+
+---
+
+(source_file)
+
+==================
+Declaration Without Body
+==================
+rule NoBody
+
+---
+
+(source_file
+  (ERROR
+    (identifier)))

@@ -315,6 +315,174 @@ rule R {
           operand: (identifier))))))
 
 ==================
+Multiple Transition Blocks
+==================
+entity Order {
+  status: pending | shipped,
+  payment: unpaid | paid
+  transitions status {
+    pending -> shipped
+    terminal: shipped
+  }
+  transitions payment {
+    unpaid -> paid
+    terminal: paid
+  }
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (pipe_expression
+          left: (identifier)
+          right: (identifier)))
+      (field_assignment
+        key: (identifier)
+        value: (pipe_expression
+          left: (identifier)
+          right: (identifier)))
+      (transition_block
+        field: (identifier)
+        (transition_edge
+          from: (identifier)
+          to: (identifier))
+        (terminal_clause
+          states: (identifier)))
+      (transition_block
+        field: (identifier)
+        (transition_edge
+          from: (identifier)
+          to: (identifier))
+        (terminal_clause
+          states: (identifier))))))
+
+==================
+When Expression with Pipe Type
+==================
+entity E {
+  reason: String when status = shipped | delivered
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (when_expression
+          value: (identifier)
+          condition: (comparison_expression
+            left: (identifier)
+            right: (pipe_expression
+              left: (identifier)
+              right: (identifier))))))))
+
+==================
+Backtick Literal in Set Literal
+==================
+rule R {
+  requires: status in {`no-cache`, public}
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (in_expression
+          element: (identifier)
+          collection: (set_literal
+            (backtick_literal)
+            (identifier)))))))
+
+==================
+Nested If Blocks
+==================
+rule R {
+  if active:
+    if premium:
+      ensures: discount > 0
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (if_block
+        condition: (identifier)
+        consequence: (if_block
+          condition: (identifier)
+          consequence: (clause
+            keyword: (clause_keyword)
+            value: (comparison_expression
+              left: (identifier)
+              right: (number_literal))))))))
+
+==================
+For Block Within Rule Alongside Clauses
+==================
+rule R {
+  requires: active
+  for item in items:
+    ensures: item.valid
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (identifier))
+      (for_block
+        binding: (identifier)
+        collection: (identifier)
+        body: (clause
+          keyword: (clause_keyword)
+          value: (member_expression
+            object: (identifier)
+            property: (identifier)))))))
+
+==================
+Invariant Block with Member Expression
+==================
+entity Account {
+  balance: Decimal
+  invariant NonNegative { this.balance >= 0 }
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (invariant_block
+        name: (identifier)
+        body: (comparison_expression
+          left: (member_expression
+            object: (identifier)
+            property: (identifier))
+          right: (number_literal))))))
+
+==================
 Context Clause
 ==================
 surface Dashboard {

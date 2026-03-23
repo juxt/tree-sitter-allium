@@ -131,6 +131,156 @@ rule p {
           right: (identifier))))))
 
 ==================
+Lambda Expression
+==================
+rule L {
+  transform: x => x + 1
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (lambda_expression
+          parameters: (identifier)
+          body: (additive_expression
+            left: (identifier)
+            right: (number_literal)))))))
+
+==================
+Nested Lambda
+==================
+rule L {
+  curried: x => y => x + y
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (lambda_expression
+          parameters: (identifier)
+          body: (lambda_expression
+            parameters: (identifier)
+            body: (additive_expression
+              left: (identifier)
+              right: (identifier))))))))
+
+==================
+Null Coalescing
+==================
+rule N {
+  fallback: a ?? b
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (null_coalescing_expression
+          left: (identifier)
+          right: (identifier))))))
+
+==================
+Optional Member Access
+==================
+rule O {
+  safe: a?.b
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (optional_member_expression
+          object: (identifier)
+          property: (identifier))))))
+
+==================
+Deep Member Chain with Method Call
+==================
+rule D {
+  v: a.b.c.method()
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (call_expression
+          function: (member_expression
+            object: (member_expression
+              object: (member_expression
+                object: (identifier)
+                property: (identifier))
+              property: (identifier))
+            property: (identifier)))))))
+
+==================
+Pipe Expression with Multiple Values
+==================
+rule P {
+  result: a | b | c | d
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (pipe_expression
+          left: (pipe_expression
+            left: (pipe_expression
+              left: (identifier)
+              right: (identifier))
+            right: (identifier))
+          right: (identifier))))))
+
+==================
+Not In Expression
+==================
+rule N {
+  requires: x not in {a, b}
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (clause
+        keyword: (clause_keyword)
+        value: (not_in_expression
+          element: (identifier)
+          collection: (set_literal
+            (identifier)
+            (identifier)))))))
+
+==================
 Thin Arrow Expression
 ==================
 rule t {

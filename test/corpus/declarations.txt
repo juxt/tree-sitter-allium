@@ -213,6 +213,67 @@ invariant PositiveBalance {
       right: (number_literal))))
 
 ==================
+Deferred Declaration with Dotted Path
+==================
+deferred Order.fraud_check
+
+---
+
+(source_file
+  (deferred_declaration
+    path: (member_expression
+      object: (identifier)
+      property: (identifier))))
+
+==================
+Open Question Declaration
+==================
+rule Review {
+  open question "How do we handle refunds?"
+}
+
+---
+
+(source_file
+  (rule_declaration
+    name: (identifier)
+    body: (block_body
+      (open_question
+        text: (string_literal)))))
+
+==================
+Empty Block Bodies
+==================
+entity Empty {}
+
+rule Empty {}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body))
+  (rule_declaration
+    name: (identifier)
+    body: (block_body)))
+
+==================
+Enum with Pipe-Separated Body
+==================
+enum Status { active | inactive }
+
+---
+
+(source_file
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      values: (pipe_expression
+        left: (identifier)
+        right: (identifier)))))
+
+==================
 Comma-separated Entity Fields
 ==================
 entity Item {
