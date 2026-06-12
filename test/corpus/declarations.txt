@@ -278,6 +278,17 @@ rule Review {
         text: (string_literal)))))
 
 ==================
+Top-Level Open Question Declaration
+==================
+open question "Admin ownership - should admins be assigned to specific roles?"
+
+---
+
+(source_file
+  (open_question
+    text: (string_literal)))
+
+==================
 Empty Block Bodies
 ==================
 entity Empty {}

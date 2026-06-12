@@ -7177,6 +7177,10 @@
           "named": true
         },
         {
+          "type": "open_question",
+          "named": true
+        },
+        {
           "type": "rule_declaration",
           "named": true
         },
