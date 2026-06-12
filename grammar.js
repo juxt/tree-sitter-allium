@@ -182,9 +182,23 @@ module.exports = grammar({
         field("type", $._expression),
       ),
 
-    // "deferred path.expression"
+    // "deferred Name.field" / "deferred alias/Name.field", optionally
+    // followed by a quoted location hint. The path is a dotted name with an
+    // optional use-alias qualifier, not a general expression — mirroring the
+    // reference parser (juxt/allium-tools#24).
     deferred_declaration: ($) =>
-      seq("deferred", field("path", $._expression)),
+      seq(
+        "deferred",
+        field("path", $.deferred_path),
+        optional(field("hint", $.string_literal)),
+      ),
+
+    deferred_path: ($) =>
+      seq(
+        $.identifier,
+        optional(seq("/", $.identifier)),
+        repeat(seq(".", $.identifier)),
+      ),
 
     // "contract Name { ... }"
     contract_declaration: ($) =>

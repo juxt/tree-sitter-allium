@@ -1651,140 +1651,41 @@
     "type": "deferred_declaration",
     "named": true,
     "fields": {
+      "hint": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      },
       "path": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "additive_expression",
-            "named": true
-          },
-          {
-            "type": "and_expression",
-            "named": true
-          },
-          {
-            "type": "backtick_literal",
-            "named": true
-          },
-          {
-            "type": "block_expression",
-            "named": true
-          },
-          {
-            "type": "boolean_literal",
-            "named": true
-          },
-          {
-            "type": "call_expression",
-            "named": true
-          },
-          {
-            "type": "comparison_expression",
-            "named": true
-          },
-          {
-            "type": "duration_literal",
-            "named": true
-          },
-          {
-            "type": "exists_expression",
-            "named": true
-          },
-          {
-            "type": "for_expression",
-            "named": true
-          },
-          {
-            "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "if_expression",
-            "named": true
-          },
-          {
-            "type": "implies_expression",
-            "named": true
-          },
-          {
-            "type": "in_expression",
-            "named": true
-          },
-          {
-            "type": "infix_predicate_expression",
-            "named": true
-          },
-          {
-            "type": "lambda_expression",
-            "named": true
-          },
-          {
-            "type": "member_expression",
-            "named": true
-          },
-          {
-            "type": "multiplicative_expression",
-            "named": true
-          },
-          {
-            "type": "not_expression",
-            "named": true
-          },
-          {
-            "type": "not_in_expression",
-            "named": true
-          },
-          {
-            "type": "null_coalescing_expression",
-            "named": true
-          },
-          {
-            "type": "null_literal",
-            "named": true
-          },
-          {
-            "type": "number_literal",
-            "named": true
-          },
-          {
-            "type": "optional_member_expression",
-            "named": true
-          },
-          {
-            "type": "or_expression",
-            "named": true
-          },
-          {
-            "type": "pipe_expression",
-            "named": true
-          },
-          {
-            "type": "set_literal",
-            "named": true
-          },
-          {
-            "type": "string_literal",
-            "named": true
-          },
-          {
-            "type": "thin_arrow_expression",
-            "named": true
-          },
-          {
-            "type": "when_expression",
-            "named": true
-          },
-          {
-            "type": "where_expression",
-            "named": true
-          },
-          {
-            "type": "with_expression",
+            "type": "deferred_path",
             "named": true
           }
         ]
       }
+    }
+  },
+  {
+    "type": "deferred_path",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
     }
   },
   {
