@@ -221,9 +221,45 @@ deferred Order.fraud_check
 
 (source_file
   (deferred_declaration
-    path: (member_expression
-      object: (identifier)
-      property: (identifier))))
+    path: (deferred_path
+      (identifier)
+      (identifier))))
+
+==================
+Deferred Declaration with Qualified Path
+==================
+deferred billing/InvoiceWorkflow.initiate
+
+---
+
+(source_file
+  (deferred_declaration
+    path: (deferred_path
+      (identifier)
+      (identifier)
+      (identifier))))
+
+==================
+Deferred Declaration with Quoted Location Hint
+==================
+deferred SlotRecovery.initiate "detailed/slot-recovery.allium"
+
+---
+
+(source_file
+  (deferred_declaration
+    path: (deferred_path
+      (identifier)
+      (identifier))
+    hint: (string_literal)))
+
+==================
+Deferred Declaration Rejects Expression-Shaped Paths
+:error
+==================
+deferred Foo("x")
+
+---
 
 ==================
 Open Question Declaration
