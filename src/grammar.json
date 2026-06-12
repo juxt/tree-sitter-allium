@@ -233,6 +233,10 @@
         {
           "type": "SYMBOL",
           "name": "invariant_declaration"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "open_question"
         }
       ]
     },

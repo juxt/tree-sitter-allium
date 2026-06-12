@@ -116,6 +116,7 @@ module.exports = grammar({
         $.deferred_declaration,
         $.contract_declaration,
         $.invariant_declaration,
+        $.open_question,
       ),
 
     use_declaration: ($) =>
