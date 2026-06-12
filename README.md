@@ -40,6 +40,10 @@ tree-sitter test
 
 Corpus tests live in `test/corpus/`.
 
+## Compatibility
+
+Allium Tools core 3.x. The grammar tracks the reference parser in [juxt/allium-tools](https://github.com/juxt/allium-tools); current as of core 3.3.
+
 ## Licence
 
 [MIT](LICENSE)
