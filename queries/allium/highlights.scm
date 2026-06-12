@@ -18,6 +18,21 @@
   "not"
   "and"
   "or"
+  "contract"
+  "invariant"
+  "implies"
+  "deferred"
+  "open"
+  "question"
+  "for"
+  "in"
+  "if"
+  "else"
+  "where"
+  "with"
+  "exists"
+  "transitions"
+  "terminal"
 ] @keyword
 
 (clause_keyword) @keyword
