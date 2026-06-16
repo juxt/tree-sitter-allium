@@ -554,3 +554,65 @@ entity F {
       (field_assignment
         key: (identifier)
         value: (identifier)))))
+
+==================
+Default with List Literal
+==================
+default clause_order = ["a", "b"]
+---
+
+(source_file
+  (default_declaration
+    name: (identifier)
+    value: (list_literal
+      (string_literal)
+      (string_literal))))
+
+==================
+Default with Empty List Literal
+==================
+default x = []
+---
+
+(source_file
+  (default_declaration
+    name: (identifier)
+    value: (list_literal)))
+
+==================
+Default with List of Object Literals
+==================
+default z = [{a: 1}, {a: 2}]
+---
+
+(source_file
+  (default_declaration
+    name: (identifier)
+    value: (list_literal
+      (block_expression
+        (block_body
+          (field_assignment
+            key: (identifier)
+            value: (number_literal))))
+      (block_expression
+        (block_body
+          (field_assignment
+            key: (identifier)
+            value: (number_literal)))))))
+
+==================
+Default with Qualified Type
+==================
+default gp/Policy my_policy = { retries: 3 }
+---
+
+(source_file
+  (default_declaration
+    alias: (identifier)
+    type: (identifier)
+    name: (identifier)
+    value: (block_expression
+      (block_body
+        (field_assignment
+          key: (identifier)
+          value: (number_literal))))))
