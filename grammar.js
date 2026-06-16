@@ -166,11 +166,14 @@ module.exports = grammar({
     actor_declaration: ($) =>
       seq("actor", field("name", $.identifier), field("body", $.block_body)),
 
-    // "default [TypeName] instanceName = expression"
+    // "default [alias/][TypeName] instanceName = expression"
     default_declaration: ($) =>
       seq(
         "default",
-        optional(field("type", $.identifier)),
+        optional(seq(
+          optional(seq(field("alias", $.identifier), "/")),
+          field("type", $.identifier),
+        )),
         field("name", $.identifier),
         "=",
         field("value", $._expression),
@@ -410,6 +413,7 @@ module.exports = grammar({
         $.null_literal,
         $.backtick_literal,
         $.set_literal,
+        $.list_literal,
         $.identifier,
         $.block_expression,
       ),
@@ -697,6 +701,17 @@ module.exports = grammar({
         $._expression,
         repeat1(seq(",", $._expression)),
         "}",
+      ),
+
+    list_literal: ($) =>
+      seq(
+        "[",
+        optional(seq(
+          $._expression,
+          repeat(seq(",", $._expression)),
+          optional(","),
+        )),
+        "]",
       ),
   },
 });
