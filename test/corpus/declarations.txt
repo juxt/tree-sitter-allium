@@ -486,3 +486,71 @@ contract Delivery {
       (field_assignment
         key: (identifier)
         value: (identifier)))))
+
+==================
+Entity with Newline-Separated Fields
+==================
+entity Foo {
+  bar: String
+  baz: String
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))
+
+==================
+Newline-Separated Fields with Trailing Comments
+==================
+entity Foo {
+  bar: String -- no comma
+  baz: String -- still highlighted
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (comment)
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (comment))))
+
+==================
+Mixed Comma and Newline Separators
+==================
+entity F {
+  a: X, b: Y
+  c: Z
+}
+
+---
+
+(source_file
+  (entity_declaration
+    name: (identifier)
+    body: (block_body
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (field_assignment
+        key: (identifier)
+        value: (identifier))
+      (field_assignment
+        key: (identifier)
+        value: (identifier)))))

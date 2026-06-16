@@ -765,8 +765,17 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": ","
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_item_separator"
+                      }
+                    ]
                   },
                   {
                     "type": "BLANK"
@@ -2426,7 +2435,12 @@
     ]
   ],
   "precedences": [],
-  "externals": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "_item_separator"
+    }
+  ],
   "inline": [],
   "supertypes": [],
   "reserved": {}
