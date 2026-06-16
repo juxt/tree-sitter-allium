@@ -39,6 +39,8 @@ module.exports = grammar({
 
   extras: ($) => [$.comment, /[ \t\r\n]+/],
 
+  externals: ($) => [$._item_separator],
+
   conflicts: ($) => [
     [$.annotation],
   ],
@@ -213,7 +215,11 @@ module.exports = grammar({
     // Block body
     // -----------------------------------------------------------------------
 
-    block_body: ($) => seq("{", repeat(seq($._block_item, optional(","))), "}"),
+    // Block items are separated by newlines (the `_item_separator` external
+    // token) or, on a single line, by commas. The trailing separator before
+    // the closing brace is optional.
+    block_body: ($) =>
+      seq("{", repeat(seq($._block_item, optional(choice(",", $._item_separator)))), "}"),
 
     _block_item: ($) =>
       choice(
